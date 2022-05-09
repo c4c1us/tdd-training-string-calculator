@@ -1,14 +1,22 @@
-export function roundDouble(number: number, digits = 1) {
-  const d = Math.pow(10, Math.abs(digits));
+import { Calculator } from './calculator';
+import { Parser } from './parser';
 
-  return Math.round(number * d) / d;
+function errorToStr(err: unknown) {
+  if (err instanceof Error) return err?.message;
+
+  return 'UnknownError';
 }
 
 export function add(number: string): string {
-  const result = number
-    .split(',')
-    .map((n) => Number(n))
-    .reduce((prev, curr) => prev + curr);
+  const parser = new Parser(number);
+  const calculator = new Calculator();
 
-  return roundDouble(result).toString();
+  try {
+    const numbers = parser.parse();
+
+    return calculator.add(numbers).toString();
+  } catch (err) {
+    // return handleError(err, number);
+    return errorToStr(err);
+  }
 }
